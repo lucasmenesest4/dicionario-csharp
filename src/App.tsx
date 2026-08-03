@@ -1,31 +1,7 @@
 import { useMemo, useState } from "react";
 import { dictionary, type DictCategory } from "./data/dictionary";
-
-function normalize(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-}
-
-function highlight(text: string, query: string) {
-  if (!query) return text;
-  const normText = normalize(text);
-  const normQuery = normalize(query);
-  const idx = normText.indexOf(normQuery);
-  if (idx === -1) return text;
-  const before = text.slice(0, idx);
-  const match = text.slice(idx, idx + query.length);
-  const after = text.slice(idx + query.length);
-  return (
-    <>
-      {before}
-      <mark className="rounded-sm bg-amber-200 px-0.5 text-inherit">{match}</mark>
-      {after}
-    </>
-  );
-}
+import { normalize, highlight } from "./utils/text";
+import CodeBlock from "./components/CodeBlock";
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -173,9 +149,7 @@ export default function App() {
                       {highlight(entry.term, query)}
                     </dt>
                     <dd className="min-w-0">
-                      <pre className="overflow-x-auto whitespace-pre-wrap break-words rounded-md bg-slate-900 px-3 py-2 font-mono text-[13px] leading-relaxed text-emerald-300">
-                        <code>{highlight(entry.code, query)}</code>
-                      </pre>
+                      <CodeBlock code={entry.code} query={query} />
                     </dd>
                   </div>
                 ))}
